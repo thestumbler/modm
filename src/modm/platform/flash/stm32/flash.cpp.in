@@ -11,7 +11,11 @@
 
 #include "flash.hpp"
 
+%% if family == "h7"
+static constexpr uint32_t FLASH_SR_ERR = 0x1fef0000;
+%% else
 static constexpr uint32_t FLASH_SR_ERR = 0xfffe;
+%% endif
 
 namespace modm::platform
 {
@@ -22,8 +26,13 @@ Flash::unlock()
 	Flash::enable();
 	if (isLocked())
 	{
+%% if family == "h7"
+		FLASH->KEYR1 = 0x45670123;
+		FLASH->KEYR1 = 0xCDEF89AB;
+%% else
 		FLASH->KEYR = 0x45670123;
 		FLASH->KEYR = 0xCDEF89AB;
+%% endif
 	}
 	return not isLocked();
 }
@@ -85,8 +94,13 @@ Flash::erase(uint8_t index)
 %% endif
 {
 %% if family != "f1"
+%% if family == "h7"
+	FLASH->SR1 = FLASH_SR_ERR;
+%% else
 	FLASH->SR = FLASH_SR_ERR;
 %% endif
+%% endif
+
 %% if has_sectors
 	FLASH->CR = FLASH_CR_STRT | FLASH_CR_SER | uint32_t(size) |
 			((index << FLASH_CR_SNB_Pos) & FLASH_CR_SNB_Msk);
@@ -94,6 +108,9 @@ Flash::erase(uint8_t index)
 %% if family in ["g0","g4"]
 	FLASH->CR = FLASH_CR_STRT | FLASH_CR_PER |
 			((index << FLASH_CR_PNB_Pos) & FLASH_CR_PNB_Msk);
+%% elif family == "h7"
+	FLASH->CR1 = FLASH_CR_START | FLASH_CR_SER |
+			((index << FLASH_CR_SNB_Pos) & FLASH_CR_SNB_Msk);
 %% else
 	FLASH->CR &= ~FLASH_CR_STRT;
 	FLASH->CR |= FLASH_CR_PER;
@@ -107,8 +124,13 @@ Flash::erase(uint8_t index)
 	FLASH->CR &= ~FLASH_CR_PER;
 	return FLASH->SR & FLASH_SR_PGERR;
 %% else
+%% if family == "h7"
+	FLASH->CR1 = 0;
+	return FLASH->SR1 & FLASH_SR_ERR;
+%% else
 	FLASH->CR = 0;
 	return FLASH->SR & FLASH_SR_ERR;
+%% endif
 %% endif
 }
 
@@ -120,7 +142,11 @@ Flash::program(uintptr_t addr, MaxWordType data)
 %% endif
 {
 %% if family != "f1"
+%% if family == "h7"
+	FLASH->SR1 = FLASH_SR_ERR;
+%% else
 	FLASH->SR = FLASH_SR_ERR;
+%% endif
 %% endif
 %% if has_sectors
 	FLASH->CR = FLASH_CR_PG | uint32_t(size);
@@ -137,15 +163,19 @@ Flash::program(uintptr_t addr, MaxWordType data)
 			break;
 	}
 %% else
-
 %% if family == "f1"
 	while(isBusy()) ;
 	FLASH->CR |= FLASH_CR_PG;
 	*(MaxWordType*) addr = data;
 %% else
+%% if family == "h7"
+	FLASH->CR1 = FLASH_CR_PG;
+%% else
 	FLASH->CR = FLASH_CR_PG;
+%% endif
 	*(uint64_t*) addr = data;
 %% endif
+
 %% endif
 
 	while(isBusy()) ;
@@ -154,9 +184,15 @@ Flash::program(uintptr_t addr, MaxWordType data)
 	FLASH->CR &= ~FLASH_CR_PG;
 	return FLASH->SR & FLASH_SR_PGERR;
 %% else
+%% if family == "h7"
+	FLASH->SR1 |= FLASH_SR_EOP;
+	FLASH->CR1 = 0;
+	return FLASH->SR1 & FLASH_SR_ERR;
+%% else
 	FLASH->SR |= FLASH_SR_EOP;
 	FLASH->CR = 0;
 	return FLASH->SR & FLASH_SR_ERR;
+%% endif
 %% endif
 }
 
