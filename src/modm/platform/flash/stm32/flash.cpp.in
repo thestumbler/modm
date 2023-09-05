@@ -163,16 +163,16 @@ Flash::program(uintptr_t addr, MaxWordType data)
 			break;
 	}
 %% else
-%% if family == "f1"
+
 	while(isBusy()) ;
+%% if family == "f1"
 	FLASH->CR |= FLASH_CR_PG;
 	*(MaxWordType*) addr = data;
-%% else
-%% if family == "h7"
+%% elif family == "h7"
 	FLASH->CR1 = FLASH_CR_PG;
+	*(uint64_t*) addr = data;
 %% else
 	FLASH->CR = FLASH_CR_PG;
-%% endif
 	*(uint64_t*) addr = data;
 %% endif
 
@@ -183,8 +183,7 @@ Flash::program(uintptr_t addr, MaxWordType data)
 %% if family == "f1"
 	FLASH->CR &= ~FLASH_CR_PG;
 	return FLASH->SR & FLASH_SR_PGERR;
-%% else
-%% if family == "h7"
+%% elif family == "h7"
 	FLASH->SR1 |= FLASH_SR_EOP;
 	FLASH->CR1 = 0;
 	return FLASH->SR1 & FLASH_SR_ERR;
@@ -193,7 +192,7 @@ Flash::program(uintptr_t addr, MaxWordType data)
 	FLASH->CR = 0;
 	return FLASH->SR & FLASH_SR_ERR;
 %% endif
-%% endif
+
 }
 
 } // namespace modm::platform
