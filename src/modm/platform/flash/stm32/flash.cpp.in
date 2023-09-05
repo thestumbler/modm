@@ -141,6 +141,11 @@ Flash::program(uintptr_t addr, MaxWordType data, WordSize size)
 Flash::program(uintptr_t addr, MaxWordType data)
 %% endif
 {
+
+	while(isBusy());
+
+	// === clear any errors
+
 %% if family != "f1"
 %% if family == "h7"
 	FLASH->SR1 = FLASH_SR_ERR;
@@ -148,6 +153,8 @@ Flash::program(uintptr_t addr, MaxWordType data)
 	FLASH->SR = FLASH_SR_ERR;
 %% endif
 %% endif
+
+	// === program in the case of unequal sector sizes
 %% if has_sectors
 	FLASH->CR = FLASH_CR_PG | uint32_t(size);
 	switch(size)
@@ -164,7 +171,7 @@ Flash::program(uintptr_t addr, MaxWordType data)
 	}
 %% else
 
-	while(isBusy()) ;
+	// === program in for cases of equal sector sizes
 %% if family == "f1"
 	FLASH->CR |= FLASH_CR_PG;
 	*(MaxWordType*) addr = data;
@@ -178,6 +185,7 @@ Flash::program(uintptr_t addr, MaxWordType data)
 
 %% endif
 
+    // === wait for write to complete
 	while(isBusy()) ;
 
 %% if family == "f1"

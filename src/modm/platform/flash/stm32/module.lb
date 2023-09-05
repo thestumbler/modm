@@ -51,7 +51,7 @@ def build(env):
     elif target.family in ["h7"]:
         block_shift = 17
         ftype = "page"
-        busy_bit = "FLASH_SR_BSY"
+        busy_bit = "FLASH_SR_QW"
 
     env.substitutions = {
         "start": int(flash["start"], 16),
