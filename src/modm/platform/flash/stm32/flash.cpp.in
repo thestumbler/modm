@@ -148,7 +148,7 @@ Flash::program(uintptr_t addr, MaxWordType data)
 
 %% if family != "f1"
 %% if family == "h7"
-	FLASH->SR1 = FLASH_SR_ERR;
+	FLASH->CCR1 = FLASH_SR_ERR;
 %% else
 	FLASH->SR = FLASH_SR_ERR;
 %% endif
@@ -177,7 +177,7 @@ Flash::program(uintptr_t addr, MaxWordType data)
 	*(MaxWordType*) addr = data;
 %% elif family == "h7"
 	FLASH->CR1 = FLASH_CR_PG;
-	*(uint64_t*) addr = data;
+	*(uint32_t*) addr = data;
 %% else
 	FLASH->CR = FLASH_CR_PG;
 	*(uint64_t*) addr = data;
@@ -192,8 +192,6 @@ Flash::program(uintptr_t addr, MaxWordType data)
 	FLASH->CR &= ~FLASH_CR_PG;
 	return FLASH->SR & FLASH_SR_PGERR;
 %% elif family == "h7"
-	FLASH->SR1 |= FLASH_SR_EOP;
-	FLASH->CR1 = 0;
 	return FLASH->SR1 & FLASH_SR_ERR;
 %% else
 	FLASH->SR |= FLASH_SR_EOP;
