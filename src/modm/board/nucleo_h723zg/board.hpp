@@ -158,6 +158,7 @@ namespace stlink
 using Tx = GpioOutputD8;
 using Rx = GpioInputD9;
 using Uart = Usart3;
+using UartHal = UsartHal3;
 /// @}
 }
 
