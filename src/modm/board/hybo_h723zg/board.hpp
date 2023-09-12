@@ -173,11 +173,10 @@ initialize()
     SysTickTimer::initialize<SystemClock>();
 
     stlink::Uart::connect<stlink::Tx::Tx, stlink::Rx::Rx>();
-    // stlink::Uart::initialize<SystemClock, 9600_Bd>(
-    stlink::Uart::initialize<SystemClock, 115200_Bd>(
+    // stlink::Uart::initialize<SystemClock, 115200_Bd>(
+    stlink::Uart::initialize<SystemClock, 38400_Bd>(
       stlink::Uart::Parity::Even,
       stlink::Uart::WordLength::Bit9 );
-
     LedGreen::setOutput(modm::Gpio::Low);
     LedYellow::setOutput(modm::Gpio::Low);
     LedRed::setOutput(modm::Gpio::Low);
