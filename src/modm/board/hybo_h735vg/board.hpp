@@ -110,10 +110,10 @@ struct SystemClock
 		// Required for running at 550 MHz
 		Rcc::setVoltageScaling(Rcc::VoltageScaling::Scale0);
 
-		Rcc::enableExternalClock(); // 8 MHz
+		Rcc::enableExternalClock(); // 16 MHz
 		const Rcc::PllFactors pllFactors1{
 			.range = Rcc::PllInputRange::MHz1_2,
-			.pllM  = 4,		//   8 MHz / 4   =   2 MHz
+			.pllM  = 8,		//  16 MHz / 8   =   2 MHz
 			.pllN  = 275,	//   2 MHz * 275 = 550 MHz
 			.pllP  = 1,		// 500 MHz / 1   = 550 MHz
 			.pllQ  = 2,		// 500 MHz / 2   = 275 MHz
@@ -141,7 +141,7 @@ struct SystemClock
 };
 
 // Arduino Footprint
-#include "nucleo144_arduino.hpp"
+// #include "nucleo144_arduino.hpp"
 
 using Button = GpioInputC13;
 
@@ -158,6 +158,7 @@ namespace stlink
 using Tx = GpioOutputD8;
 using Rx = GpioInputD9;
 using Uart = Usart3;
+using UartHal = UsartHal3;
 /// @}
 }
 

@@ -12,13 +12,15 @@
 # -----------------------------------------------------------------------------
 
 def init(module):
-    module.name = ":board:hybo-h735vg"
+    module.name = ":board:nucleo-h723zg"
     module.description = """\
-# HYBO-H735VG
+# NUCLEO-H723ZG
+
+[Nucleo kit for STM32H723ZG](https://www.st.com/en/evaluation-tools/nucleo-h723zg.html)
 """
 
 def prepare(module, options):
-    if not options[":target"].partname.startswith("stm32h735vgh"):
+    if not options[":target"].partname.startswith("stm32h723zgt"):
         return False
 
     module.depends(
@@ -39,7 +41,7 @@ def build(env):
     }
     env.template("../board.cpp.in", "board.cpp")
     env.copy('.')
-    # env.copy("../nucleo144_arduino.hpp", "nucleo144_arduino.hpp")
+    env.copy("../nucleo144_arduino.hpp", "nucleo144_arduino.hpp")
     env.outbasepath = "modm/openocd/modm/board/"
     env.copy(repopath("tools/openocd/modm/st_nucleo_h723zg.cfg"), "st_nucleo_h723zg.cfg")
     env.collect(":build:openocd.source", "modm/board/st_nucleo_h723zg.cfg")
