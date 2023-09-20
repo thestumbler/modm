@@ -116,8 +116,8 @@ struct SystemClock
 			.pllM  = 8,		//  16 MHz / 8   =   2 MHz
 			.pllN  = 275,	//   2 MHz * 275 = 550 MHz
 			.pllP  = 1,		// 500 MHz / 1   = 550 MHz
-			.pllQ  = 4,		// 500 MHz / 4   = 137.5 MHz
-			.pllR  = 1,		// 500 MHz / 2   = 550 MHz
+			.pllQ  = 2,		// 500 MHz / 2   = 275 MHz
+			.pllR  = 2,		// 500 MHz / 2   = 275 MHz
 		};
 		Rcc::enablePll1(Rcc::PllSource::Hse, pllFactors1);
 		Rcc::setFlashLatency<Ahb>();

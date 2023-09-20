@@ -41,5 +41,5 @@ def build(env):
     env.copy('.')
     # env.copy("../nucleo144_arduino.hpp", "nucleo144_arduino.hpp")
     env.outbasepath = "modm/openocd/modm/board/"
-    env.copy(repopath("tools/openocd/modm/st_nucleo_h723zg.cfg"), "st_nucleo_h723zg.cfg")
-    env.collect(":build:openocd.source", "modm/board/st_nucleo_h723zg.cfg")
+    env.copy(repopath("tools/openocd/modm/st_nucleo_h723zg.cfg"), "hybo_h723zg.cfg")
+    env.collect(":build:openocd.source", "modm/board/hybo_h723zg.cfg")
