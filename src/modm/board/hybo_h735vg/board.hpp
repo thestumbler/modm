@@ -18,16 +18,16 @@
 
 using namespace modm::platform;
 
-/// @ingroup modm_board_nucleo_h723zg
+/// @ingroup modm_board_hybo_h735vg
 #define MODM_BOARD_HAS_LOGGER
 
 namespace Board
 {
-/// @ingroup modm_board_nucleo_h723zg
+/// @ingroup modm_board_hybo_h735vg
 /// @{
 using namespace modm::literals;
 
-/// STM32H723ZG running at 500MHz from PLL clock generated from 8 MHz HSE
+/// STM32H735VG running at 500MHz from PLL clock generated from 16 MHz HSE
 struct SystemClock
 {
 	// Max 550MHz
@@ -110,7 +110,7 @@ struct SystemClock
 		// Required for running at 550 MHz
 		Rcc::setVoltageScaling(Rcc::VoltageScaling::Scale0);
 
-		Rcc::enableExternalClock(); // 16 MHz
+		Rcc::enableExternalCrystal(); // 16 MHz
 		const Rcc::PllFactors pllFactors1{
 			.range = Rcc::PllInputRange::MHz1_2,
 			.pllM  = 8,		//  16 MHz / 8   =   2 MHz
@@ -140,20 +140,41 @@ struct SystemClock
 
 };
 
-// Arduino Footprint
-// #include "nucleo144_arduino.hpp"
+// On the ITFS lidar, there are no on-board buttons or LEDs
+// Let's assign these pins to suitable GPIO so they can remain
+// in the project, not conflict with existing ITFS  hardware,
+// and could possibly be helpful in some scenarios.
+//
+// There are five unused pins on the MCU,
+//
+// * PA1
+// * PA2
+// * PA11
+// * PC11
+// * PC12
+//
+// And the AUX and USER connectors have two GPIO pins available for
+// unspecified use:
+//
+// * PD12  (ITFS calls this GP0)
+// * PD15  (ITFS calls this GP1)
+//
+// Lets assign the button to PD12
 
-using Button = GpioInputC13;
+using Button = GpioInputD12;
 
-using LedGreen = GpioOutputB0;
-using LedYellow = GpioOutputE1;
-using LedRed = GpioOutputB14;
+// And assign the LEDs as follows:
+
+using LedGreen = GpioOutputD15;
+using LedYellow = GpioOutputA1;
+using LedRed = GpioOutputA2;
 using Leds = SoftwareGpioPort< LedRed, LedYellow, LedGreen >;
+
 /// @}
 
 namespace stlink
 {
-/// @ingroup modm_board_nucleo_h723zg
+/// @ingroup modm_board_hybo_h735vg
 /// @{
 using Tx = GpioOutputD8;
 using Rx = GpioInputD9;
@@ -162,7 +183,7 @@ using UartHal = UsartHal3;
 /// @}
 }
 
-/// @ingroup modm_board_nucleo_h723zg
+/// @ingroup modm_board_hybo_h735vg
 /// @{
 using LoggerDevice = modm::IODeviceWrapper< stlink::Uart, modm::IOBuffer::BlockIfFull >;
 
