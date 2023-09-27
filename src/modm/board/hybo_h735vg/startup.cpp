@@ -17,5 +17,6 @@ extern "C" void
 modm_initialize_platform(void)
 {
 	// Configure internal voltage regulator
-	Rcc::configurePowerSource(Rcc::PowerSource::Ldo);
+	Rcc::configurePowerSource(Rcc::PowerSource::LdoFromSmps1_8V_ExtSupply);
+	Rcc::setVoltageScaling(Rcc::VoltageScaling::Scale0);
 }
